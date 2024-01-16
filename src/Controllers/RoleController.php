@@ -7,6 +7,8 @@ use Spatie\Permission\Models\Role;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Spatie\Permission\Models\Permission;
+use Illuminate\Support\Facades\Auth;
+use App\Services\SystemAdminService;
 
 class RoleController extends Controller
 {
@@ -19,6 +21,9 @@ class RoleController extends Controller
 
     public function create(): View
     {
+        if(!SystemAdminService::isSystemAdmin(Auth::user()))
+            abort(403, 'Unauthorized action.');
+
         $permissions = Permission::pluck('name', 'id');
 
         return view('PermissionsUI::roles.create', compact('permissions'));
@@ -26,6 +31,9 @@ class RoleController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
+        if(!SystemAdminService::isSystemAdmin(Auth::user()))
+            abort(403, 'Unauthorized action.');
+
         $request->validate([
             'name' => ['required', 'string'],
             'permissions' => ['array'],
@@ -40,6 +48,9 @@ class RoleController extends Controller
 
     public function edit(Role $role): View
     {
+        if(!SystemAdminService::isSystemAdmin(Auth::user()))
+            abort(403, 'Unauthorized action.');
+
         $permissions = Permission::pluck('name', 'id');
 
         return view('PermissionsUI::roles.edit', compact('role', 'permissions'));
@@ -47,6 +58,9 @@ class RoleController extends Controller
 
     public function update(Request $request, Role $role): RedirectResponse
     {
+        if(!SystemAdminService::isSystemAdmin(Auth::user()))
+            abort(403, 'Unauthorized action.');
+
         $request->validate([
             'name' => ['required', 'string'],
             'permissions' => ['array'],
@@ -61,6 +75,9 @@ class RoleController extends Controller
 
     public function destroy(Role $role): RedirectResponse
     {
+        if(!SystemAdminService::isSystemAdmin(Auth::user()))
+            abort(403, 'Unauthorized action.');
+
         $role->delete();
 
         return redirect()->route(config('permission_ui.route_name_prefix') . 'roles.index');

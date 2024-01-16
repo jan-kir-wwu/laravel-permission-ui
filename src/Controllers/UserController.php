@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Auth;
+use App\Services\SystemAdminService;
 
 class UserController extends Controller
 {
@@ -26,9 +28,16 @@ class UserController extends Controller
 
     public function update(Request $request, User $user): RedirectResponse
     {
+        $changingUser = Auth::user();
+
         $request->validate([
             'roles' => ['required', 'array'],
         ]);
+
+        $roles = $request->input('roles');
+
+        if(!$changingUser->hasRole($roles))
+            abort(403, 'Unauthorized action.');
 
         $user->syncRoles($request->input('roles'));
 

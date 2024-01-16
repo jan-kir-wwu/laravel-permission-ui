@@ -7,6 +7,8 @@ use Spatie\Permission\Models\Role;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Spatie\Permission\Models\Permission;
+use Illuminate\Support\Facades\Auth;
+use App\Services\SystemAdminService;
 
 class PermissionController extends Controller
 {
@@ -19,6 +21,9 @@ class PermissionController extends Controller
 
     public function create(): View
     {
+        if(!SystemAdminService::isSystemAdmin(Auth::user()))
+            abort(403, 'Unauthorized action.');
+
         $roles = Role::pluck('name', 'id');
 
         return view('PermissionsUI::permissions.create', compact('roles'));
@@ -26,6 +31,9 @@ class PermissionController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
+        if(!SystemAdminService::isSystemAdmin(Auth::user()))
+            abort(403, 'Unauthorized action.');
+
         $data = $request->validate([
             'name' => ['required', 'string'],
             'roles' => ['array'],
@@ -40,6 +48,9 @@ class PermissionController extends Controller
 
     public function edit(Permission $permission): View
     {
+        if(!SystemAdminService::isSystemAdmin(Auth::user()))
+            abort(403, 'Unauthorized action.');
+
         $roles = Role::pluck('name', 'id');
 
         return view('PermissionsUI::permissions.edit', compact('permission', 'roles'));
@@ -47,6 +58,9 @@ class PermissionController extends Controller
 
     public function update(Request $request, Permission $permission): RedirectResponse
     {
+        if(!SystemAdminService::isSystemAdmin(Auth::user()))
+            abort(403, 'Unauthorized action.');
+
         $data = $request->validate([
             'name' => ['required', 'string'],
             'roles' => ['array'],
@@ -61,6 +75,9 @@ class PermissionController extends Controller
 
     public function destroy(Permission $permission): RedirectResponse
     {
+        if(!SystemAdminService::isSystemAdmin(Auth::user()))
+            abort(403, 'Unauthorized action.');
+        
         $permission->delete();
 
         return redirect()->route(config('permission_ui.route_name_prefix') . 'permissions.index');
