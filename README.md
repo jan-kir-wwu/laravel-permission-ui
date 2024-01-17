@@ -1,8 +1,8 @@
 ## Laravel Permission UI
 
-__Status update: package idea abandoned.__ 
-
-__Unfortunately, it's not possible/easy to build this package as flexible as I was expecting, with different layouts for Tailwind/Bootstrap/whatever and auto-implementing all Spatie package features for all possible cases. So I decided not to pursue this idea further and focus on other projects.__
+__This is a fork of a small laraveldaily package called laravel-permission-ui.__ 
+__I changed it so only a system admin can create and update permissions and roles.__ 
+__User can only update other users with roles they have as well.__ 
 
 - - - - -
 
@@ -37,11 +37,9 @@ return [
     'middleware'        => ['web', 'auth'],
     'url_prefix'        => 'permissions',
     'route_name_prefix' => 'permission_ui.',
+    'system_admin_role' => 'system admin',
 ];
 ```
-
-The visual design is based on simple Tailwind classes. 
-At the moment, no visual customization options are available, but we may add them in the future, based on your ideas and feedback.
 
 ---
 
