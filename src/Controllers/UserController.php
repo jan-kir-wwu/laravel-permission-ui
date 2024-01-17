@@ -33,11 +33,21 @@ class UserController extends Controller
         ]);
 
         $roles = $request->input('roles');
+        //load user roles
 
         $userModel = SystemAdminService::getUserModel();
         $changingUser = $userModel::find($user->id);
-        if(!($changingUser->hasRole(config('permission_ui.system_admin_role')) || $changingUser->hasRole($roles)))
-            abort(403, 'Unauthorized action.');
+        if(!SystemAdminService::isSystemAdmin(Auth::user())) {
+            foreach($roles as $role){
+                if(!$changingUser->hasRole($role)) // responde with 403
+                    abort(403, 'Unauthorized action.');
+            }
+            $user->load('roles');
+            foreach($user->roles as $role){
+                if(!$changingUser->hasRole($role)) // responde with 403
+                    abort(403, 'Unauthorized action.');
+            }
+        }
 
         $user->syncRoles($request->input('roles'));
 
