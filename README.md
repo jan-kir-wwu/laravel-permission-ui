@@ -2,7 +2,7 @@
 
 __This is a fork of a small laraveldaily package called laravel-permission-ui.__ 
 __I changed it so only a system admin can create and update permissions and roles.__ 
-__User can only update other users with roles they have as well.__ 
+__Users can only update other users with roles they have as well.__ 
 
 - - - - -
 
