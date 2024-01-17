@@ -39,9 +39,17 @@ class PermissionController extends Controller
             'roles' => ['array'],
         ]);
 
-        $permission = Permission::create($data);
+        // fix from dfumagalli/laravel-permission-ui fork
+        $permissionAttribute = ['name' => $request->input('name')];
+        $permission = Permission::create($permissionAttribute);
+        $roles = $request->input('roles');
 
-        $permission->syncRoles($request->input('roles'));
+        if (!empty($roles)) {
+            foreach ($roles as $roleId) {
+                $role = Role::findById($roleId);
+                $role->givePermissionTo([$permission]);
+            }
+        }
 
         return redirect()->route(config('permission_ui.route_name_prefix') . 'permissions.index');
     }
@@ -66,9 +74,27 @@ class PermissionController extends Controller
             'roles' => ['array'],
         ]);
 
-        $permission->update($data);
+        $permissionAttribute = ['name' => $request->input('name')];
+        $permission->update($permissionAttribute);
+        $roles = $request->input('roles');
 
-        $permission->syncRoles($request->input('roles'));
+        // fix from dfumagalli/laravel-permission-ui fork
+        // If some roles have been checked off, then all roles need to have their permissions cleared first
+        $allRoles = Role::with('permissions')->get();
+
+        foreach ($allRoles as $role) {
+            // Remove permissions before eventually assigning the new one
+            if ($role->hasPermissionTo($permission)) {
+                $role->revokePermissionTo($permission);
+            }
+        }
+
+        if (!empty($roles)) {
+            foreach ($roles as $roleId) {
+                $role = Role::findById($roleId);
+                $role->givePermissionTo([$permission]);
+            }
+        }
 
         return redirect()->route(config('permission_ui.route_name_prefix') . 'permissions.index');
     }
