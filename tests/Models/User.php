@@ -13,7 +13,7 @@ class User extends Authenticatable
     use HasRoles;
 
     protected $guarded = [];
-
+    protected $guard_name = 'web';
     protected $hidden = [
         'password',
         'remember_token',

@@ -8,7 +8,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Spatie\Permission\Models\Permission;
 use Illuminate\Support\Facades\Auth;
-use App\Services\SystemAdminService;
+use LaravelDaily\PermissionsUI\Services\SystemAdminService;
 
 class RoleController extends Controller
 {
@@ -23,6 +23,7 @@ class RoleController extends Controller
     {
         if(!SystemAdminService::isSystemAdmin(Auth::user()))
             abort(403, 'Unauthorized action.');
+        
 
         $permissions = Permission::pluck('name', 'id');
 

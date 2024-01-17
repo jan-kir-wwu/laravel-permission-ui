@@ -8,7 +8,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Spatie\Permission\Models\Permission;
 use Illuminate\Support\Facades\Auth;
-use App\Services\SystemAdminService;
+use LaravelDaily\PermissionsUI\Services\SystemAdminService;
 
 class PermissionController extends Controller
 {
@@ -77,7 +77,7 @@ class PermissionController extends Controller
     {
         if(!SystemAdminService::isSystemAdmin(Auth::user()))
             abort(403, 'Unauthorized action.');
-        
+
         $permission->delete();
 
         return redirect()->route(config('permission_ui.route_name_prefix') . 'permissions.index');

@@ -4,11 +4,11 @@ namespace LaravelDaily\PermissionsUI\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use LaravelDaily\PermissionsUI\Services\SystemAdminService;
 use Spatie\Permission\Models\Role;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
-use App\Services\SystemAdminService;
 
 class UserController extends Controller
 {
@@ -36,7 +36,9 @@ class UserController extends Controller
 
         $roles = $request->input('roles');
 
-        if(!$changingUser->hasRole($roles))
+        $userModel = SystemAdminService::getUserModel();
+        $changingUser = $userModel::find($user->id);
+        if(!($user->hasRole(config('permission_ui.system_admin_role')) || $changingUser->hasRole($roles)))
             abort(403, 'Unauthorized action.');
 
         $user->syncRoles($request->input('roles'));
