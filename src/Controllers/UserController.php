@@ -28,8 +28,6 @@ class UserController extends Controller
 
     public function update(Request $request, User $user): RedirectResponse
     {
-        $changingUser = Auth::user();
-
         $request->validate([
             'roles' => ['required', 'array'],
         ]);
@@ -38,7 +36,7 @@ class UserController extends Controller
 
         $userModel = SystemAdminService::getUserModel();
         $changingUser = $userModel::find($user->id);
-        if(!($user->hasRole(config('permission_ui.system_admin_role')) || $changingUser->hasRole($roles)))
+        if(!($changingUser->hasRole(config('permission_ui.system_admin_role')) || $changingUser->hasRole($roles)))
             abort(403, 'Unauthorized action.');
 
         $user->syncRoles($request->input('roles'));
