@@ -24,7 +24,6 @@ class RoleController extends Controller
         if(!SystemAdminService::isSystemAdmin(Auth::user()))
             abort(403, 'Unauthorized action.');
         
-
         $permissions = Permission::pluck('name', 'id');
 
         return view('PermissionsUI::roles.create', compact('permissions'));
