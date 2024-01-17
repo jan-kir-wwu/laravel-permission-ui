@@ -18,7 +18,7 @@ class PermissionsTest extends TestCase
         return $user;
     }
 
-    public function UserCanOnlyChangeRolesIfHasPermission()
+    public function DenyRoleManagementWithoutSystemAdmin()
     {
         $user = User::factory()->create();
 
@@ -29,7 +29,7 @@ class PermissionsTest extends TestCase
         $response->assertStatus(403);
     }
 
-    public function UserCanOnlyChangePermissionsIfHasPermission()
+    public function DenyPermissionManagementWithoutSystemAdmin()
     {
         $user = User::factory()->create();
 
