@@ -38,9 +38,10 @@ class UserController extends Controller
 
         $userModel = SystemAdminService::getUserModel();
         $changingUser = $userModel::find($user->id);
+        $changingUser->load('roles');
         if(!SystemAdminService::isSystemAdmin(Auth::user())) {
             foreach($roles as $role){
-                if(!$changingUser->hasRole($role->name)) // responde with 403
+                if(!$changingUser->hasRole($role)) // responde with 403
                     abort(403, 'Unauthorized action.');
             }
             $user->load('roles');
