@@ -29,12 +29,13 @@ class UserController extends Controller
     public function update(Request $request, User $user): RedirectResponse
     {
         $request->validate([
-            'roles' => ['array'],
+            'roles' => ['nullable','array'],
         ]);
-        $roles = $request->input('roles');
-        if(!$roles)
-            $roles = [];
+
+        $roleIds = $request->input('roles');
         //load user roles
+        if(!$roleIds) $roleIds = [];
+        $roles = Role::whereIn('id', $roleIds)->pluck('name');
 
         $userModel = SystemAdminService::getUserModel();
         $changingUser = $userModel::find($user->id);
@@ -42,12 +43,12 @@ class UserController extends Controller
         if(!SystemAdminService::isSystemAdmin(Auth::user())) {
             foreach($roles as $role){
                 if(!$changingUser->hasRole($role)) // responde with 403
-                    abort(403, 'Unauthorized action.');
+                abort(403, 'Unauthorized action. You can only change roles you have.');
             }
             $user->load('roles');
             foreach($user->roles as $role){
                 if(!$changingUser->hasRole($role->name)) // responde with 403
-                    abort(403, 'Unauthorized action.');
+                abort(403, 'Unauthorized action. You can only change users with all roles you have too.');
             }
         }
 
