@@ -62,7 +62,7 @@ class RoleController extends Controller
             abort(403, 'Unauthorized action.');
 
         $request->validate([
-            'name' => ['required', 'string'],
+            'name' => ['required', 'string', 'unique:roles'],
             'permissions' => ['array'],
         ]);
 

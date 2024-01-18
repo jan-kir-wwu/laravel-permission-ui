@@ -70,7 +70,7 @@ class PermissionController extends Controller
             abort(403, 'Unauthorized action.');
 
         $data = $request->validate([
-            'name' => ['required', 'string'],
+            'name' => ['required', 'string', 'unique:permissions'],
             'roles' => ['array'],
         ]);
 
