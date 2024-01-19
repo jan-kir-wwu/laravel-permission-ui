@@ -8,10 +8,17 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Spatie\Permission\Models\Permission;
 use Illuminate\Support\Facades\Auth;
-use LaravelDaily\PermissionsUI\Services\SystemAdminService;
+use LaravelDaily\PermissionsUI\Services\PermHelperService;
 
 class PermissionController extends Controller
 {
+
+    public function cancelIfNotSysAdmin()
+    {
+        if(!PermHelperService::isSystemAdmin(Auth::user()))
+            abort(403, 'Unauthorized action.');
+    }
+
     public function index(): View
     {
         $permissions = Permission::all();
@@ -21,8 +28,7 @@ class PermissionController extends Controller
 
     public function create(): View
     {
-        if(!SystemAdminService::isSystemAdmin(Auth::user()))
-            abort(403, 'Unauthorized action.');
+        $this->cancelIfNotSysAdmin();
 
         $roles = Role::pluck('name', 'id');
 
@@ -31,8 +37,7 @@ class PermissionController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
-        if(!SystemAdminService::isSystemAdmin(Auth::user()))
-            abort(403, 'Unauthorized action.');
+        $this->cancelIfNotSysAdmin();
 
         $data = $request->validate([
             'name' => ['required', 'string', 'unique:permissions'],
@@ -56,8 +61,7 @@ class PermissionController extends Controller
 
     public function edit(Permission $permission): View
     {
-        if(!SystemAdminService::isSystemAdmin(Auth::user()))
-            abort(403, 'Unauthorized action.');
+        $this->cancelIfNotSysAdmin();
 
         $roles = Role::pluck('name', 'id');
 
@@ -66,8 +70,7 @@ class PermissionController extends Controller
 
     public function update(Request $request, Permission $permission): RedirectResponse
     {
-        if(!SystemAdminService::isSystemAdmin(Auth::user()))
-            abort(403, 'Unauthorized action.');
+        $this->cancelIfNotSysAdmin();
 
         $data = $request->validate([
             'name' => ['required', 'string'],
@@ -101,8 +104,7 @@ class PermissionController extends Controller
 
     public function destroy(Permission $permission): RedirectResponse
     {
-        if(!SystemAdminService::isSystemAdmin(Auth::user()))
-            abort(403, 'Unauthorized action.');
+        $this->cancelIfNotSysAdmin();
 
         $permission->delete();
 

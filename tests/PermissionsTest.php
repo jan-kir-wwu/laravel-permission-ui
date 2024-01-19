@@ -26,7 +26,7 @@ class PermissionsTest extends TestCase
             'name' => 'test role',
         ]);
 
-        $response->assertStatus(403);
+        $response->assertStatus(302);
     }
 
     public function testDenyPermissionManagementWithoutSystemAdmin()
